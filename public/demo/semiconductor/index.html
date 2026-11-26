@@ -25,40 +25,42 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 input,textarea,select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
 textarea{min-height:96px;resize:vertical}
 label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px;font-weight:500}
-.demo{background:#0e1116;color:#fff;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px max(5vw,16px);font-size:14px}
-.demo b{background:var(--yel);color:#0e1116;border-radius:6px;padding:1px 8px;margin-right:8px}
-.seg{display:flex;background:#262b33;border-radius:999px;padding:4px}
-.seg a{padding:8px 16px;border-radius:999px;text-decoration:none;color:#c9ced6;font-weight:700}
+.demo{position:fixed;right:16px;bottom:16px;z-index:25;display:flex;align-items:center;gap:8px;background:rgba(14,17,22,.88);backdrop-filter:blur(6px);color:#c9ced6;border-radius:999px;padding:5px 5px 5px 14px;font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.seg{display:flex;gap:2px}
+.seg a{padding:7px 14px;border-radius:999px;text-decoration:none;color:#c9ced6;font-weight:700;font-size:13px}
 .seg a.on{background:#fff;color:#0e1116}
 .view{display:none}.view.on{display:block}
 /* 사이트 */
-.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px max(5vw,16px);flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:.02em}
-.menu{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.menu a{text-decoration:none;padding:10px 12px;font-weight:500}
-.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.lang button{background:none;color:var(--mute);border-radius:0;min-height:36px;padding:6px 12px;font-size:13px}
-.lang button.on{background:var(--ink);color:var(--bg)}
-.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;align-items:center;padding:24px max(5vw,16px) 56px;max-width:1240px;margin:0 auto}
-.hero h1{font-size:clamp(36px,5.6vw,64px);line-height:1.05;margin:0 0 18px;font-weight:700;text-wrap:balance;letter-spacing:-.02em}
-.hero p{font-size:18px;color:var(--mute);max-width:34em;margin:0 0 24px}
-.fig{position:relative;aspect-ratio:1;max-height:520px;width:100%}
+.top{position:relative;min-height:min(92vh,780px);background:radial-gradient(ellipse at 50% 62%,#1c2742 0%,#0a0d15 55%,#05070b 100%);color:#fff;overflow:hidden;display:flex;flex-direction:column}
+.top::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 50%,rgba(5,7,11,.6),rgba(5,7,11,.1) 70%),linear-gradient(to bottom,rgba(5,7,11,.1),rgba(5,7,11,.6));z-index:1;pointer-events:none}
+.nav{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px max(5vw,16px);flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:.04em;color:#fff}
+.menu{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.menu a{text-decoration:none;padding:10px 12px;font-weight:500;color:#dfe3ea}
+.menu a:hover{color:#fff}
+.lang{display:flex;gap:2px;margin-left:8px}
+.lang button{background:none;color:#7f8897;border-radius:6px;min-height:36px;padding:6px 8px;font-size:13px}
+.lang button.on{color:#fff}
+.top .fig{position:absolute;left:50%;top:58%;width:min(860px,150vw);aspect-ratio:1;transform:translate(-50%,-50%);opacity:.7;z-index:0}
 .fig svg{position:absolute;inset:0;width:100%;height:100%}
-.spin{transform-origin:250px 250px;animation:spin 60s linear infinite}
+.hero{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px max(5vw,16px) 96px}
+.hero h1{font-size:clamp(40px,6.4vw,72px);line-height:1.08;margin:0 0 20px;font-weight:700;text-wrap:balance;letter-spacing:-.02em;color:#fff}
+.hero p{font-size:clamp(17px,1.6vw,20px);color:#c7cdd8;max-width:36em;margin:0 auto 32px}
+.cta{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--blue);border-radius:999px;padding:12px 26px;font-weight:700;text-decoration:none;min-height:48px}
+.cta:hover{background:#eef1ff}
+.spin{transform-origin:250px 250px;animation:spin 80s linear infinite}
 .scan{animation:scan 4s ease-in-out infinite alternate}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes scan{from{transform:translateY(-170px)}to{transform:translateY(170px)}}
 @media(prefers-reduced-motion:reduce){.spin,.scan{animation:none}}
 .band{padding:clamp(40px,6vw,80px) max(5vw,16px)}
-.band.dark{background:#0e1116;color:#eef0f3}
 .inner{max-width:1240px;margin:0 auto}
-.band h2{font-size:clamp(28px,3.6vw,40px);line-height:1.1;margin:0 0 16px;text-wrap:balance}
+.band h2{font-size:clamp(30px,4vw,46px);line-height:1.1;font-weight:700;margin:0 0 16px;text-wrap:balance}
 .lead{font-size:18px;max-width:40em;color:var(--mute)}
-.dark .lead{color:#aab1bd}
 .biz{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:28px}
-.biz div{border-top:3px solid var(--yel);padding:18px 0}
-.biz h3{margin:0 0 6px;font-size:19px}
-.biz p{margin:0;color:#aab1bd}
+.biz div{background:light-dark(#f6f7f9,#151920);border:1px solid var(--line);border-radius:16px;padding:26px}
+.biz h3{margin:0 0 8px;font-size:20px;display:flex;align-items:center;gap:10px}.biz h3::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue);flex:none}
+.biz p{margin:0;color:var(--mute)}
 .plist{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:24px}
 .pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:left;color:var(--ink);font-weight:400;border-radius:16px;min-height:180px;display:flex;flex-direction:column;gap:8px}
 .pcard:hover{border-color:var(--blue)}
@@ -95,20 +97,21 @@ th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;verti
 th{font-size:13px;color:var(--mute);font-weight:500}
 .acts{display:flex;gap:6px;flex-wrap:wrap}
 .scroll{overflow-x:auto}
-.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,16px);background:#0e1116;color:#fff;padding:12px 20px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:30;font-size:15px}
+.toast{position:fixed;bottom:76px;left:50%;transform:translate(-50%,16px);background:#0e1116;color:#fff;padding:12px 20px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:30;font-size:15px}
 .toast.on{opacity:1;transform:translate(-50%,0)}
-@media(max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}.fig{max-width:420px;margin:0 auto}.adm{grid-template-columns:minmax(0,1fr)}.side{display:flex;flex-wrap:wrap;gap:4px;border-right:0;border-bottom:1px solid var(--line)}.side p{width:100%}}
+@media(max-width:860px){.adm{grid-template-columns:minmax(0,1fr)}.side{display:flex;flex-wrap:wrap;gap:4px;border-right:0;border-bottom:1px solid var(--line)}.side p{width:100%}}
 @media(max-width:600px){.two{grid-template-columns:minmax(0,1fr)}table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6.5em;margin-inline-start:-7em;color:var(--mute)}.stack td:empty{display:none}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
 </head>
 <body>
 <div class="demo">
-  <span><b>제안용 시안</b>가상의 회사·데이터입니다. 관리자에서 고친 내용이 사이트에 바로 반영됩니다.</span>
+  <span>시안 · 가상 데이터</span>
   <nav class="seg" aria-label="화면 전환"><a href="#site" id="t-site">사이트</a><a href="#admin" id="t-admin">관리자</a></nav>
 </div>
 
 <div class="view" id="v-site">
+  <div class="top">
   <header class="nav">
     <div class="logo"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="2.5"/><rect x="9" y="9" width="5" height="5" fill="var(--blue)"/><rect x="16" y="9" width="5" height="5" fill="currentColor"/><rect x="9" y="16" width="5" height="5" fill="currentColor"/><rect x="16" y="16" width="5" height="5" fill="var(--yel)"/></svg>ARCEL</div>
     <div class="menu">
@@ -116,30 +119,27 @@ th{font-size:13px;color:var(--mute);font-weight:500}
       <div class="lang" role="group" aria-label="언어"><button id="l-ko" type="button">KO</button><button id="l-en" type="button">EN</button></div>
     </div>
   </header>
-  <section class="hero">
-    <div>
-      <h1 id="s-heroTitle"></h1>
-      <p id="s-heroSub"></p>
-      <a href="#site-projects"><button class="blue" type="button" tabindex="-1" data-k="cta"></button></a>
-    </div>
-    <div class="fig" aria-label="회전하는 실리콘 웨이퍼 비주얼">
-      <svg viewBox="0 0 500 500" role="img" aria-hidden="true">
+  <div class="fig" aria-hidden="true"><svg viewBox="0 0 500 500" role="img" aria-hidden="true">
         <defs><clipPath id="wc"><circle cx="250" cy="250" r="200"/></clipPath>
-          <radialGradient id="wg" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#dfe4ee"/><stop offset=".55" stop-color="#aeb7c7"/><stop offset="1" stop-color="#7d889c"/></radialGradient>
-          <linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffd400" stop-opacity="0"/><stop offset=".5" stop-color="#ffd400" stop-opacity=".75"/><stop offset="1" stop-color="#ffd400" stop-opacity="0"/></linearGradient></defs>
-        <ellipse cx="258" cy="462" rx="170" ry="16" fill="#000" opacity=".12"/>
+          <radialGradient id="wg" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#3a4458"/><stop offset=".55" stop-color="#232a38"/><stop offset="1" stop-color="#141922"/></radialGradient>
+          <linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffd400" stop-opacity="0"/><stop offset=".5" stop-color="#8fa2ff" stop-opacity=".35"/><stop offset="1" stop-color="#ffd400" stop-opacity="0"/></linearGradient></defs>
+        
         <g class="spin">
-          <circle cx="250" cy="250" r="204" fill="#5d6779"/>
+          <circle cx="250" cy="250" r="204" fill="#2c3445"/>
           <circle cx="250" cy="250" r="200" fill="url(#wg)"/>
           <g clip-path="url(#wc)" id="dies"></g>
-          <path d="M238 450 a12 12 0 0 1 24 0z" fill="var(--bg)"/>
+          <path d="M238 450 a12 12 0 0 1 24 0z" fill="#0a0d15"/>
         </g>
         <g clip-path="url(#wc)"><rect class="scan" x="40" y="230" width="420" height="40" fill="url(#sg)"/></g>
-        <circle cx="250" cy="250" r="200" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/>
-      </svg>
-    </div>
+        <circle cx="250" cy="250" r="200" fill="none" stroke="#8fa2ff" stroke-opacity=".35" stroke-width="1.5"/>
+      </svg></div>
+  <section class="hero">
+    <h1 id="s-heroTitle"></h1>
+    <p id="s-heroSub"></p>
+    <a class="cta" href="#site-projects"><span data-k="cta"></span> <span aria-hidden="true">›</span></a>
   </section>
-  <section class="band dark" id="site-about"><div class="inner">
+</div>
+<section class="band" id="site-about"><div class="inner">
     <h2 id="s-aboutTitle"></h2><p class="lead" id="s-aboutBody"></p>
     <div class="biz" id="s-biz"></div>
   </div></section>
@@ -210,8 +210,8 @@ const visible=x=>S.lang==='ko'?!!x.ko.t:!!x.en.t;
   let h='';const sz=26,g=4;
   for(let y=50;y<450;y+=sz+g)for(let x=50;x<450;x+=sz+g){
     const cx=x+sz/2-250,cy=y+sz/2-250;if(Math.hypot(cx,cy)>188)continue;
-    const r=(x*7+y*13)%23;const fill=r===0?'#ffd400':r<3?'#2346ff':'#c9d0dc';
-    h+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="2" fill="${fill}" opacity="${r<3?.95:.55}"/>`;
+    const r=Math.abs(((x*73856093)^(y*19349663))>>3)%100;const fill=r<4?'#ffd400':r<12?'#4d6bff':'#5a6478';
+    h+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="2" fill="${fill}" opacity="${r<12?.9:.35}"/>`;
   }
   $('dies').innerHTML=h;
 }
