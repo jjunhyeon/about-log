@@ -22,11 +22,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <div className="bg" aria-hidden="true">
-          <span className="orb orb-1" />
-          <span className="orb orb-2" />
-          <span className="orb orb-3" />
-        </div>
+        <div className="bg" aria-hidden="true" />
         <Tabs />
         <main>{children}</main>
         <footer className="wrap footer">© {new Date().getFullYear()} {profile.name}</footer>

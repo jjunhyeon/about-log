@@ -34,7 +34,7 @@ export default function MePage() {
             </ul>
           </div>
           <div className="card">
-            <h3>약속</h3>
+            <h3>소통 약속</h3>
             <ul className="plain">
               {me.growing.map((s) => <li key={s}><Text>{s}</Text></li>)}
             </ul>

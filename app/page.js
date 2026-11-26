@@ -17,6 +17,16 @@ export default function Home() {
       </h1>
       <p className="headline reveal d2">{profile.headline}</p>
 
+      <div className="cta reveal d2">
+        {profile.wishket && (
+          <a href={profile.wishket} target="_blank" rel="noreferrer" className="btn btn-primary">
+            위시켓에서 문의하기 ↗
+          </a>
+        )}
+        <Link href="/dev" className="btn">프로젝트 보기</Link>
+        {profile.responseNote && <p className="cta-note">{profile.responseNote}</p>}
+      </div>
+
       {profile.stats && (
         <div className="stats reveal d3">
           {profile.stats.map((s) => (
