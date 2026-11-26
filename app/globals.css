@@ -176,7 +176,7 @@ a { color: inherit; }
 .project li + li { margin-top: 6px; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { font-family: var(--mono); font-size: 13px; border: 1px solid var(--line-strong); background: rgba(255, 255, 255, .03); border-radius: 8px; padding: 4px 10px; transition: border-color .2s, color .2s; }
+.chip { font-family: var(--mono); font-size: 13px; white-space: nowrap; border: 1px solid var(--line-strong); background: rgba(255, 255, 255, .03); border-radius: 8px; padding: 4px 10px; transition: border-color .2s, color .2s; }
 .chip:hover { border-color: var(--accent); color: #fff; }
 
 .timeline { list-style: none; border-left: 1px solid var(--line-strong); padding-left: 24px; display: grid; gap: 18px; }
