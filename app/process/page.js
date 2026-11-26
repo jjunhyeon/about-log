@@ -9,6 +9,19 @@ export default function ProcessPage() {
     <>
       <PageHead eyebrow="일하는 방식" title={me.title} intro="처음 연락부터 오픈 이후까지 이렇게 진행합니다." />
 
+      {me.proof && (
+        <section className="proof reveal d3">
+          <div className="proof-num">
+            <b>{me.proof.value}</b>
+            <span>{me.proof.label}</span>
+          </div>
+          <div>
+            <h2>{me.proof.title}</h2>
+            <p>{me.proof.body}</p>
+          </div>
+        </section>
+      )}
+
       <section className="section">
         <h2>진행 과정</h2>
         <div className="grid traits">

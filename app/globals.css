@@ -117,11 +117,19 @@ a { color: inherit; }
 .btn-primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
 .cta-note { width: 100%; color: var(--muted); font-size: 13px; margin-top: 2px; }
 
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 48px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 48px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
 .stat { padding: 18px 20px; }
 .stat + .stat { border-left: 1px solid var(--line); }
 .stat b { display: block; font-size: 22px; letter-spacing: -0.02em; }
 .stat span { color: var(--muted); font-size: 13px; }
+
+/* ── 신뢰 근거 ── */
+.proof { display: grid; grid-template-columns: 180px 1fr; gap: 28px; align-items: center; margin-bottom: 48px; padding: 28px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--ok); box-shadow: var(--shadow); }
+.proof-num b { display: block; font-size: 44px; line-height: 1.1; letter-spacing: -0.04em; color: var(--ok); }
+.proof-num span { color: var(--muted); font-size: 13px; font-weight: 600; }
+.proof h2 { font-size: 19px; letter-spacing: -0.02em; margin-bottom: 8px; }
+.proof p { color: var(--muted); font-size: 15px; }
+@media (max-width: 640px) { .proof { grid-template-columns: 1fr; gap: 14px; } }
 
 /* ── 진입 카드 ── */
 .doors { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
@@ -137,8 +145,10 @@ a { color: inherit; }
 .door-desc { color: var(--muted); }
 .door-go { margin-top: auto; font-weight: 700; color: var(--accent-ink); }
 @media (max-width: 640px) {
-  .doors, .stats { grid-template-columns: 1fr; }
-  .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
+  .doors { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .stat:nth-child(3) { border-left: 0; }
+  .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
 }
 
 /* ── 서브 페이지 ── */
