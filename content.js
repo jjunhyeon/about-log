@@ -11,6 +11,7 @@ export const profile = {
   headline: "요구사항 분석부터 설계, 개발, 인프라, 배포·운영까지 혼자서 책임지는 개발자",
   email: "", // 공개할 이메일 (비우면 숨김)
   github: "https://github.com/jjunhyeon",
+  photo: "/profile.jpg", // public 폴더의 사진 (비우면 숨김)
   wishket: "https://www.wishket.com/partners/p/junh1266/",
   status: "외주 프로젝트 문의 가능 · 평일 저녁 · 주말", // 비우면 배지 숨김
   responseNote: "", // 예: "문의는 보통 당일 저녁에 답변드립니다" (실제로 지킬 수 있는 문장만, 비우면 숨김)

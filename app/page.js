@@ -4,12 +4,18 @@ import { profile, me, dev } from "../content";
 export default function Home() {
   return (
     <section className="hero wrap">
-      {profile.status && (
-        <span className="badge reveal">
-          <span className="pulse" />
-          {profile.status}
-        </span>
-      )}
+      <div className="hero-top reveal">
+        {profile.photo && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={profile.photo} alt={`${profile.name} 프로필 사진`} className="avatar" width="64" height="64" />
+        )}
+        {profile.status && (
+          <span className="badge">
+            <span className="pulse" />
+            {profile.status}
+          </span>
+        )}
+      </div>
       <p className="eyebrow reveal d1">{profile.role} · {profile.company}</p>
       <h1 className="reveal d1">
         <span className="grad-text">{profile.name}</span>

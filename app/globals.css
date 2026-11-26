@@ -82,6 +82,8 @@ a { color: inherit; }
   padding: 6px 12px; border-radius: 999px;
   background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
 }
+.hero-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line-strong); box-shadow: var(--shadow); background: var(--surface); }
 .pulse { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
 .pulse::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--ok); animation: ping 2s ease-out infinite; }
 @keyframes ping { from { transform: scale(.7); opacity: .8; } to { transform: scale(1.7); opacity: 0; } }
