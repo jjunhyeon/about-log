@@ -7,9 +7,9 @@ export default function MePage() {
   return (
     <>
       <section className="page-head wrap">
-        <p className="eyebrow">01 · 일하는 방식</p>
-        <h1 className="page-title">{me.title}</h1>
-        <p className="intro">{me.intro}</p>
+        <p className="eyebrow reveal">01 · 일하는 방식</p>
+        <h1 className="page-title reveal d1">{me.title}</h1>
+        <p className="intro reveal d2">{me.intro}</p>
       </section>
 
       <section className="wrap section">

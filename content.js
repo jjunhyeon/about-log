@@ -12,6 +12,12 @@ export const profile = {
   email: "", // 공개할 이메일 (비우면 숨김)
   github: "https://github.com/jjunhyeon",
   wishket: "https://www.wishket.com/partners/p/junh1266/",
+  status: "외주 프로젝트 문의 가능 · 평일 저녁 · 주말", // 비우면 배지 숨김
+  stats: [
+    { value: "6년", label: "웹 개발 경력" },
+    { value: "A → Z", label: "요구사항부터 운영까지" },
+    { value: "공공 SI", label: "보안 기준 프로젝트 경험" },
+  ],
 };
 
 // ───────── 01 · 일하는 방식 ─────────

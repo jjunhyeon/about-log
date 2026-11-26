@@ -8,9 +8,9 @@ export default function DevPage() {
   return (
     <>
       <section className="page-head wrap">
-        <p className="eyebrow">02 · 경력과 기술</p>
-        <h1 className="page-title">{dev.title}</h1>
-        <p className="intro">{dev.intro}</p>
+        <p className="eyebrow reveal">02 · 경력과 기술</p>
+        <h1 className="page-title reveal d1">{dev.title}</h1>
+        <p className="intro reveal d2">{dev.intro}</p>
       </section>
 
       <section className="wrap section">
