@@ -1,5 +1,5 @@
 import "./globals.css";
-import Tabs from "./components/Tabs";
+import Sidebar from "./components/Sidebar";
 import { profile } from "../content";
 
 export const metadata = {
@@ -23,9 +23,13 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <div className="bg" aria-hidden="true" />
-        <Tabs />
-        <main>{children}</main>
-        <footer className="wrap footer">© {new Date().getFullYear()} {profile.name}</footer>
+        <div className="shell">
+          <Sidebar />
+          <div className="content">
+            <main>{children}</main>
+            <footer className="footer">© {new Date().getFullYear()} {profile.name}</footer>
+          </div>
+        </div>
       </body>
     </html>
   );

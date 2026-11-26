@@ -1,35 +1,26 @@
 import Link from "next/link";
-import { profile, me, dev } from "../content";
+import { profile } from "../content";
+
+const QUICK = [
+  { href: "/profile", num: "01", title: "프로필", desc: "어떤 사람이고, 무엇을 잘하는지" },
+  { href: "/career", num: "02", title: "이력", desc: "경력, 기술 스택, 자격증" },
+  { href: "/projects", num: "03", title: "프로젝트", desc: "직접 맡아 온 일들" },
+  { href: "/process", num: "04", title: "일하는 방식", desc: "진행 과정과 소통 약속" },
+];
 
 export default function Home() {
   return (
-    <section className="hero wrap">
-      <div className="hero-top reveal">
-        {profile.photo && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={profile.photo} alt={`${profile.name} 프로필 사진`} className="avatar" width="64" height="64" />
-        )}
-        {profile.status && (
-          <span className="badge">
-            <span className="pulse" />
-            {profile.status}
-          </span>
-        )}
-      </div>
-      <p className="eyebrow reveal d1">{profile.role} · {profile.company}</p>
+    <section className="hero">
+      <p className="eyebrow reveal">{profile.role} · {profile.company}</p>
       <h1 className="reveal d1">
-        <span className="grad-text">{profile.name}</span>
+        {profile.name}
         <span className="dot">.</span>
       </h1>
       <p className="headline reveal d2">{profile.headline}</p>
 
       <div className="cta reveal d2">
-        {profile.wishket && (
-          <a href={profile.wishket} target="_blank" rel="noreferrer" className="btn btn-primary">
-            위시켓에서 문의하기 ↗
-          </a>
-        )}
-        <Link href="/dev" className="btn">프로젝트 보기</Link>
+        <Link href="/contact" className="btn btn-primary">프로젝트 문의하기</Link>
+        <Link href="/projects" className="btn">프로젝트 보기</Link>
         {profile.responseNote && <p className="cta-note">{profile.responseNote}</p>}
       </div>
 
@@ -45,18 +36,14 @@ export default function Home() {
       )}
 
       <div className="doors reveal d4">
-        <Link href="/me" className="door">
-          <span className="door-num">01</span>
-          <strong>일하는 방식</strong>
-          <span className="door-desc">{me.tagline}</span>
-          <span className="door-go">들어가기 →</span>
-        </Link>
-        <Link href="/dev" className="door door-dark">
-          <span className="door-num">02</span>
-          <strong>경력과 기술</strong>
-          <span className="door-desc">{dev.tagline}</span>
-          <span className="door-go">들어가기 →</span>
-        </Link>
+        {QUICK.map((q) => (
+          <Link key={q.href} href={q.href} className="door">
+            <span className="door-num">{q.num}</span>
+            <strong>{q.title}</strong>
+            <span className="door-desc">{q.desc}</span>
+            <span className="door-go">보기 →</span>
+          </Link>
+        ))}
       </div>
     </section>
   );
