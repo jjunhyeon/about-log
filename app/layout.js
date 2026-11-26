@@ -15,8 +15,14 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
+        />
       </head>
       <body>
+        <div className="bg" aria-hidden="true" />
         <Tabs />
         <main>{children}</main>
         <footer className="wrap footer">© {new Date().getFullYear()} {profile.name}</footer>

@@ -7,9 +7,9 @@ export default function MePage() {
   return (
     <>
       <section className="page-head wrap">
-        <p className="eyebrow">01 · 일하는 방식</p>
-        <h1 className="page-title">{me.title}</h1>
-        <p className="intro">{me.intro}</p>
+        <p className="eyebrow reveal">01 · 일하는 방식</p>
+        <h1 className="page-title reveal d1">{me.title}</h1>
+        <p className="intro reveal d2">{me.intro}</p>
       </section>
 
       <section className="wrap section">
@@ -34,7 +34,7 @@ export default function MePage() {
             </ul>
           </div>
           <div className="card">
-            <h3>약속</h3>
+            <h3>소통 약속</h3>
             <ul className="plain">
               {me.growing.map((s) => <li key={s}><Text>{s}</Text></li>)}
             </ul>
