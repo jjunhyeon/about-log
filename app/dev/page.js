@@ -1,14 +1,14 @@
 import { profile, dev } from "../../content";
 import Text, { isTodo } from "../components/Text";
 
-export const metadata = { title: `개발자의 나 · ${profile.name}` };
+export const metadata = { title: `경력과 기술 · ${profile.name}` };
 
 export default function DevPage() {
-  const hasContact = profile.email || profile.github;
+  const hasContact = profile.email || profile.github || profile.wishket;
   return (
     <>
       <section className="page-head wrap">
-        <p className="eyebrow">02 · 개발자의 나</p>
+        <p className="eyebrow">02 · 경력과 기술</p>
         <h1 className="page-title">{dev.title}</h1>
         <p className="intro">{dev.intro}</p>
       </section>
@@ -63,12 +63,26 @@ export default function DevPage() {
         </ol>
       </section>
 
+      <section className="wrap section">
+        <h2>자격증</h2>
+        <ol className="timeline">
+          {dev.certifications.map((c) => (
+            <li key={c.name}>
+              <span className="period">{c.date}</span>
+              <strong>{c.name}</strong>
+              <span>{c.org}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       {hasContact && (
         <section className="wrap section">
           <h2>연락처</h2>
           <div className="contact">
             {profile.email && <a href={`mailto:${profile.email}`}>{profile.email}</a>}
             {profile.github && <a href={profile.github} target="_blank" rel="noreferrer">GitHub ↗</a>}
+            {profile.wishket && <a href={profile.wishket} target="_blank" rel="noreferrer">위시켓 프로필 ↗</a>}
           </div>
         </section>
       )}

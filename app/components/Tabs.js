@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { profile } from "../../content";
 
 const TABS = [
-  { href: "/me", label: "나 분석" },
-  { href: "/dev", label: "개발자의 나" },
+  { href: "/me", label: "일하는 방식" },
+  { href: "/dev", label: "경력과 기술" },
 ];
 
 export default function Tabs() {

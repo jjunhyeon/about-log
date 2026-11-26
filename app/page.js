@@ -14,13 +14,13 @@ export default function Home() {
       <div className="doors">
         <Link href="/me" className="door">
           <span className="door-num">01</span>
-          <strong>나 분석</strong>
+          <strong>일하는 방식</strong>
           <span className="door-desc">{me.tagline}</span>
           <span className="door-go">들어가기 →</span>
         </Link>
         <Link href="/dev" className="door door-dark">
           <span className="door-num">02</span>
-          <strong>개발자의 나</strong>
+          <strong>경력과 기술</strong>
           <span className="door-desc">{dev.tagline}</span>
           <span className="door-go">들어가기 →</span>
         </Link>
