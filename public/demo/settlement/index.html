@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>크리에이터 정산 데모</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Red+Hat+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 차분하고 정확한 사내 업무 도구, 숫자가 주인공
+   IDEA: 월별 정산서(지급 명세서) — 매출에서 지급액까지 한 줄씩 내려가는 계산서
+   PICTURE: 오른쪽의 큰 '정산 계산서' 카드가 입력과 동시에 다시 계산됨
+   COLOUR and TYPE: 네이비 #0b1433 상단 밴드, 블루 #3b4fd8 주색, 레드 #e8452c 공제·세금, Noto Sans KR + Red Hat Display 숫자
+   LAYOUT: 상단 밴드와 탭, 입력 왼쪽·계산서 오른쪽, 600px 아래에서 세로로 쌓기 */
+:root{color-scheme:light dark;--bg:light-dark(#f4f6fb,#0d1220);--card:light-dark(#fff,#161d31);--ink:light-dark(#141a2e,#e9ecf5);--mute:light-dark(#5b6478,#9aa3b8);--line:light-dark(#e2e6ef,#283149);--navy:#0b1433;--blue:light-dark(#3b4fd8,#7d8cff);--red:light-dark(#d23a22,#ff7a63);--teal:light-dark(#1f8f94,#4fc1c6);--soft:light-dark(#eef1fd,#1c2442)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip}
+.top{background:var(--navy);color:#fff;padding:22px max(5vw,16px) 0}
+.top h1{margin:0;font-size:clamp(24px,3.2vw,34px);line-height:1.1;font-weight:800;text-wrap:balance}
+.top p{margin:6px 0 16px;color:#b9c2e0;font-size:14px}
+.demo{display:inline-block;background:#e8452c;color:#fff;font-size:13px;font-weight:700;border-radius:6px;padding:2px 10px;margin-bottom:10px}
+nav{display:flex;flex-wrap:wrap;gap:4px}
+nav a{color:#c9d0ea;text-decoration:none;padding:12px 16px;border-radius:10px 10px 0 0;font-weight:500;font-size:15px}
+nav a.on{background:var(--bg);color:var(--ink);font-weight:700}
+nav a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #4fc1c6;outline-offset:2px}
+main{padding:24px max(5vw,16px) 56px;max-width:1240px;margin:0 auto}
+.view{display:none}.view.on{display:block}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+h2{font-size:20px;margin:0 0 14px;line-height:1.3}
+h3{font-size:16px;margin:18px 0 8px}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px;font-weight:500}
+input,select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+input:disabled{background:var(--soft);color:var(--mute)}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}.row>.x{flex:none}
+button{font:inherit;font-size:15px;font-weight:700;border:0;border-radius:10px;padding:10px 16px;min-height:44px;cursor:pointer;background:var(--blue);color:#fff}
+button.ghost{background:var(--soft);color:var(--ink)}
+button.warn{background:var(--red)}
+button.x{background:none;color:var(--mute);padding:6px 10px;min-width:44px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.bill{position:sticky;top:16px}
+.line{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.line span:last-child,.num{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.line.minus span:last-child{color:var(--red)}
+.line.sub{font-weight:700;border-bottom-style:solid}
+.line small{color:var(--mute);display:block;font-size:13px}
+.pay{margin-top:16px;background:var(--soft);border-radius:12px;padding:16px 18px;display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap}
+.pay b{font:800 clamp(30px,4.4vw,44px)/1.05 "Red Hat Display","Noto Sans KR",sans-serif;color:var(--blue);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--mute);white-space:nowrap}
+.tag.lock{background:light-dark(#fde8e4,#3a1d1a);color:var(--red)}
+.tag.ok{background:light-dark(#e2f4f4,#13302f);color:var(--teal)}
+.note{font-size:13px;color:var(--mute);margin-top:10px}
+.carry{margin-top:10px;font-size:14px;color:var(--red);font-weight:500}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:13px;color:var(--mute);font-weight:500}
+td.num,th.num{text-align:right}
+tr.click{cursor:pointer}tr.click:hover{background:var(--soft)}
+tfoot td{font-weight:800}
+.scroll{overflow-x:auto}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.log li{padding:10px 0;border-bottom:1px solid var(--line);list-style:none}
+.log ul{padding:0;margin:0}.log time{color:var(--mute);font-size:13px;display:block}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;font-size:15px}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+@media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}.bill{position:static}}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--mute)}.stack td:empty{display:none}.stack tfoot tr{border-top:2px solid var(--line)}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="top">
+  <h1>크리에이터 정산 관리자</h1>
+  <p>월별 데이터를 입력하면 분배율 → 지출 공제 → 원천세 순으로 지급액이 자동 계산됩니다. <span style="opacity:.7">(시안 · 가상 데이터)</span></p>
+  <nav id="nav">
+    <a href="#settle">월 정산 입력</a>
+    <a href="#history">월별 내역</a>
+    <a href="#creators">크리에이터·계약</a>
+    <a href="#log">변경 이력</a>
+  </nav>
+</header>
+<main>
+  <section class="view" id="v-settle">
+    <div class="grid">
+      <div class="card">
+        <h2>월 정산 입력</h2>
+        <div class="row">
+          <div><label for="s-contract">계약</label><select id="s-contract"></select></div>
+          <div><label for="s-month">정산 월</label><select id="s-month"></select></div>
+        </div>
+        <label for="s-rev">정산 대상 매출 (원)</label>
+        <input id="s-rev" inputmode="numeric" type="number" min="0" step="1000">
+        <h3>지출 공제 항목</h3>
+        <div id="s-exps"></div>
+        <button class="ghost" id="s-addexp" type="button">+ 공제 항목 추가</button>
+        <div class="btns">
+          <button id="s-save" type="button">저장</button>
+          <button class="warn" id="s-lock" type="button">이 달 정산 마감</button>
+        </div>
+        <p class="note" id="s-status"></p>
+      </div>
+      <div class="card bill" aria-live="polite">
+        <h2 id="b-title">정산 계산서</h2>
+        <div id="b-lines"></div>
+        <div class="pay"><span id="b-paylabel">최종 지급액</span><b id="b-pay">0원</b></div>
+        <div class="carry" id="b-carry"></div>
+        <p class="note">세율·절사 기준은 예시입니다. 실제 규칙은 요구사항 정의 단계에서 확정해 반영합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-history">
+    <div class="card">
+      <div class="row" style="flex-wrap:wrap;justify-content:space-between">
+        <h2 style="flex:2">계약별 월별 정산 내역</h2>
+        <div style="flex:1;min-width:220px"><label for="h-contract">계약</label><select id="h-contract"></select></div>
+      </div>
+      <p class="note" id="h-info"></p>
+      <div class="scroll"><table class="stack" id="h-table"></table></div>
+      <p class="note">행을 누르면 해당 월의 정산 입력 화면으로 이동합니다.</p>
+    </div>
+  </section>
+
+  <section class="view" id="v-creators">
+    <div class="card"><h2>크리에이터·계약 목록</h2><div class="scroll"><table class="stack" id="c-table"></table></div></div>
+    <div class="cols" style="margin-top:20px">
+      <form class="card" id="f-creator"><h2>크리에이터 등록</h2>
+        <label for="fc-name">이름</label><input id="fc-name" required maxlength="30">
+        <label for="fc-type">사업자 유형</label><select id="fc-type"></select>
+        <div class="btns"><button>등록</button></div></form>
+      <form class="card" id="f-contract"><h2>계약 등록</h2>
+        <label for="fk-creator">크리에이터</label><select id="fk-creator"></select>
+        <label for="fk-name">계약명</label><input id="fk-name" required maxlength="40">
+        <div class="row"><div><label for="fk-start">계약 시작 월</label><select id="fk-start"></select></div>
+        <div><label for="fk-rate">분배율 (%)</label><input id="fk-rate" type="number" min="0" max="100" value="60" required></div></div>
+        <label for="fk-mode">지출 공제 방식</label><select id="fk-mode"><option value="after">분배 후 공제 (크리에이터 몫에서 차감)</option><option value="before">분배 전 공제 (매출에서 먼저 차감)</option></select>
+        <div class="btns"><button>등록</button></div></form>
+      <form class="card" id="f-rate"><h2>분배율 변경</h2>
+        <label for="fr-contract">계약</label><select id="fr-contract"></select>
+        <div class="row"><div><label for="fr-from">적용 시작 월</label><select id="fr-from"></select></div>
+        <div><label for="fr-rate">새 분배율 (%)</label><input id="fr-rate" type="number" min="0" max="100" required></div></div>
+        <p class="note">변경 전 월의 정산에는 기존 분배율이 그대로 적용됩니다. 마감된 월에는 적용할 수 없습니다.</p>
+        <div class="btns"><button>변경</button></div></form>
+    </div>
+  </section>
+
+  <section class="view" id="v-log">
+    <div class="card log"><h2>변경 이력</h2><p class="note">누가 언제 무엇을 바꿨는지 기록해, 지급 이후에도 근거를 확인할 수 있습니다.</p><ul id="l-list"></ul></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+{
+const MONTHS=['2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'];
+const TYPES={biz:'개인 · 사업소득 3.3%',etc:'개인 · 기타소득 8.8%',corp:'사업자 · 세금계산서'};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const won=n=>(n<0?'-':'')+Math.abs(Math.round(n)).toLocaleString('ko-KR')+'원';
+const ymLabel=ym=>{const [y,m]=ym.split('-');return `${y}년 ${+m}월`};
+const fl10=x=>Math.floor(x/10)*10;
+
+const S={
+  creators:[{id:'c1',name:'하늘빛 스튜디오',type:'biz'},{id:'c2',name:'모카랩',type:'corp'},{id:'c3',name:'지우의 요리노트',type:'etc'}],
+  contracts:[
+    {id:'k1',cid:'c1',name:'영상 채널 운영',start:'2026-07',mode:'after',rates:[{from:'2026-07',rate:60},{from:'2026-10',rate:65}]},
+    {id:'k2',cid:'c2',name:'브랜드 협업 콘텐츠',start:'2026-08',mode:'before',rates:[{from:'2026-08',rate:50}]},
+    {id:'k3',cid:'c3',name:'숏폼 레시피 시리즈',start:'2026-09',mode:'after',rates:[{from:'2026-09',rate:70}]}],
+  data:{
+    'k1|2026-07':{rev:4200000,exps:[{n:'촬영 장비 대여',a:350000}],locked:true},
+    'k1|2026-08':{rev:5150000,exps:[{n:'편집 외주',a:600000}],locked:true},
+    'k1|2026-09':{rev:4780000,exps:[{n:'편집 외주',a:600000},{n:'썸네일 디자인',a:120000}],locked:true},
+    'k1|2026-10':{rev:6320000,exps:[{n:'편집 외주',a:650000}],locked:false},
+    'k1|2026-11':{rev:5900000,exps:[{n:'편집 외주',a:650000},{n:'로케이션 촬영비',a:480000}],locked:false},
+    'k2|2026-08':{rev:8000000,exps:[{n:'제작비',a:1500000}],locked:true},
+    'k2|2026-09':{rev:3000000,exps:[],locked:true},
+    'k2|2026-10':{rev:6500000,exps:[{n:'제작비',a:900000}],locked:false},
+    'k3|2026-09':{rev:900000,exps:[{n:'식재료·소품',a:820000}],locked:true},
+    'k3|2026-10':{rev:2400000,exps:[{n:'식재료·소품',a:300000}],locked:false},
+    'k3|2026-11':{rev:3100000,exps:[{n:'식재료·소품',a:350000}],locked:false}},
+  log:[
+    {t:'2026-11-03 10:12',m:'하늘빛 스튜디오 · 영상 채널 운영: 분배율 60% → 65% (2026년 10월부터 적용)'},
+    {t:'2026-10-05 18:40',m:'2026년 9월 정산 마감: 하늘빛 스튜디오, 모카랩, 지우의 요리노트'},
+    {t:'2026-09-02 09:30',m:'지우의 요리노트 · 숏폼 레시피 시리즈 계약 등록 (분배율 70%, 분배 후 공제)'}]
+};
+const sel={k:'k1',ym:'2026-11'};
+let uid=10;
+
+const creator=id=>S.creators.find(c=>c.id===id);
+const contract=id=>S.contracts.find(k=>k.id===id);
+const kLabel=k=>`${creator(k.cid).name} · ${k.name}`;
+const rateAt=(k,ym)=>{let r=k.rates[0].rate;for(const x of k.rates)if(x.from<=ym)r=x.rate;return r};
+const entry=(k,ym)=>S.data[k.id+'|'+ym]||(S.data[k.id+'|'+ym]={rev:0,exps:[],locked:false});
+const now=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`};
+const addLog=m=>S.log.unshift({t:now(),m});
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),1800)};
+
+function tax(type,g){
+  if(type==='corp')return{it:0,lt:0,vat:Math.floor(g*0.1)};
+  const it=type==='biz'?fl10(g*0.03):fl10(g*0.4*0.2);
+  return{it,lt:fl10(it*0.1),vat:0};
+}
+function calc(k,ym,carryIn){
+  const d=entry(k,ym),E=d.exps.reduce((s,x)=>s+(+x.a||0),0),r=rateAt(k,ym),rev=+d.rev||0;
+  const share=k.mode==='before'?Math.floor((rev-E)*r/100):Math.floor(rev*r/100)-E;
+  const gross=share+carryIn,type=creator(k.cid).type;
+  if(gross<0)return{rev,E,r,share,carryIn,gross,it:0,lt:0,vat:0,pay:0,carryOut:gross,type,locked:d.locked};
+  const t=tax(type,gross);
+  return{rev,E,r,share,carryIn,gross,...t,pay:type==='corp'?gross+t.vat:gross-t.it-t.lt,carryOut:0,type,locked:d.locked};
+}
+function series(k,upto){
+  const out=[];let carry=0;
+  for(const ym of MONTHS){if(ym<k.start)continue;if(upto&&ym>upto)break;const c=calc(k,ym,carry);c.ym=ym;out.push(c);carry=c.carryOut}
+  return out;
+}
+
+/* 월 정산 입력 */
+function fillSettleSelects(){
+  $('s-contract').innerHTML=S.contracts.map(k=>`<option value="${k.id}">${esc(kLabel(k))}</option>`).join('');
+  $('s-contract').value=sel.k;
+  const k=contract(sel.k);
+  if(sel.ym<k.start)sel.ym=k.start;
+  $('s-month').innerHTML=MONTHS.filter(m=>m>=k.start).map(m=>`<option value="${m}">${ymLabel(m)}${entry(k,m).locked?' · 마감':''}</option>`).join('');
+  $('s-month').value=sel.ym;
+}
+function renderSettleForm(){
+  fillSettleSelects();
+  const k=contract(sel.k),d=entry(k,sel.ym),L=d.locked;
+  $('s-rev').value=d.rev||'';$('s-rev').disabled=L;
+  $('s-exps').innerHTML=d.exps.length?d.exps.map((x,i)=>`<div class="row" style="margin-bottom:8px">
+    <input aria-label="공제 항목명" data-i="${i}" data-f="n" value="${esc(x.n)}" placeholder="항목명" ${L?'disabled':''}>
+    <input aria-label="공제 금액" data-i="${i}" data-f="a" type="number" min="0" step="1000" value="${+x.a||''}" placeholder="금액" ${L?'disabled':''}>
+    <button class="x" type="button" data-del="${i}" aria-label="공제 항목 삭제" ${L?'disabled':''}>✕</button></div>`).join(''):'<p class="note">공제 항목이 없습니다.</p>';
+  $('s-addexp').disabled=L;$('s-save').disabled=L;
+  $('s-lock').textContent=L?'마감 해제':'이 달 정산 마감';
+  $('s-lock').className=L?'ghost':'warn';
+  $('s-status').innerHTML=L?'<span class="tag lock">마감됨</span> 마감된 월은 수정할 수 없습니다. 수정하려면 마감을 해제하세요 (이력에 기록됩니다).':`<span class="tag ok">입력 중</span> 공제 방식: ${k.mode==='before'?'분배 전 공제':'분배 후 공제'} · 분배율 ${rateAt(k,sel.ym)}%`;
+  renderBill();
+}
+function renderBill(){
+  const k=contract(sel.k),s=series(k,sel.ym),c=s[s.length-1],cr=creator(k.cid);
+  $('b-title').textContent=`${ymLabel(sel.ym)} 정산 계산서 · ${cr.name}`;
+  const L=[];
+  L.push(['정산 대상 매출','',c.rev]);
+  if(k.mode==='before'){
+    L.push(['지출 공제',`${entry(k,sel.ym).exps.length}개 항목`,-c.E,'minus']);
+    L.push([`분배 (${c.r}%)`,'공제 후 금액 × 분배율',c.share,'sub']);
+  }else{
+    L.push([`분배 (${c.r}%)`,'매출 × 분배율',Math.floor(c.rev*c.r/100)]);
+    L.push(['지출 공제',`${entry(k,sel.ym).exps.length}개 항목`,-c.E,'minus']);
+    L.push(['크리에이터 몫','',c.share,'sub']);
+  }
+  if(c.carryIn)L.push(['전월 이월 차감','지난달 공제 초과분',c.carryIn,'minus']);
+  if(c.carryIn)L.push(['지급 대상 금액','',c.gross,'sub']);
+  if(c.type==='corp'){L.push(['부가가치세 (10%)','세금계산서 발행 기준',c.vat])}
+  else{L.push([`원천 소득세 (${c.type==='biz'?'3%':'8%'})`,c.type==='etc'?'필요경비 60% 가정 · 10원 미만 절사':'10원 미만 절사',-c.it,'minus']);L.push(['지방소득세 (소득세의 10%)','',-c.lt,'minus'])}
+  $('b-lines').innerHTML=L.map(([a,b,v,cl])=>`<div class="line ${cl||''}"><span>${esc(a)}${b?`<small>${esc(b)}</small>`:''}</span><span>${won(v)}</span></div>`).join('');
+  $('b-paylabel').textContent=c.type==='corp'?'최종 지급액 (부가세 포함)':'최종 지급액';
+  $('b-pay').textContent=won(c.pay);
+  $('b-carry').textContent=c.carryOut<0?`공제액이 크리에이터 몫보다 커서 ${won(-c.carryOut)}이 다음 달로 이월됩니다.`:'';
+}
+$('s-contract').addEventListener('change',e=>{sel.k=e.target.value;renderSettleForm()});
+$('s-month').addEventListener('change',e=>{sel.ym=e.target.value;renderSettleForm()});
+$('s-rev').addEventListener('input',e=>{entry(contract(sel.k),sel.ym).rev=Math.max(0,+e.target.value||0);renderBill()});
+$('s-exps').addEventListener('input',e=>{const i=e.target.dataset.i;if(i===undefined)return;const x=entry(contract(sel.k),sel.ym).exps[i];x[e.target.dataset.f]=e.target.dataset.f==='a'?Math.max(0,+e.target.value||0):e.target.value;renderBill()});
+$('s-exps').addEventListener('click',e=>{const i=e.target.dataset.del;if(i===undefined)return;entry(contract(sel.k),sel.ym).exps.splice(i,1);renderSettleForm()});
+$('s-addexp').addEventListener('click',()=>{entry(contract(sel.k),sel.ym).exps.push({n:'',a:0});renderSettleForm();const ins=$('s-exps').querySelectorAll('input[data-f=n]');ins[ins.length-1]?.focus()});
+$('s-save').addEventListener('click',()=>{const k=contract(sel.k);addLog(`${kLabel(k)}: ${ymLabel(sel.ym)} 정산 데이터 저장 (매출 ${won(entry(k,sel.ym).rev)})`);toast('저장했습니다');renderLog()});
+$('s-lock').addEventListener('click',()=>{const k=contract(sel.k),d=entry(k,sel.ym);d.locked=!d.locked;addLog(`${kLabel(k)}: ${ymLabel(sel.ym)} 정산 ${d.locked?'마감':'마감 해제'}`);toast(d.locked?'정산을 마감했습니다':'마감을 해제했습니다');renderSettleForm();renderLog()});
+
+/* 월별 내역 */
+function renderHistory(){
+  $('h-contract').innerHTML=S.contracts.map(k=>`<option value="${k.id}">${esc(kLabel(k))}</option>`).join('');
+  $('h-contract').value=sel.k;
+  const k=contract(sel.k),cr=creator(k.cid),s=series(k);
+  $('h-info').textContent=`${TYPES[cr.type]} · 계약 시작 ${ymLabel(k.start)} · ${k.mode==='before'?'분배 전 공제':'분배 후 공제'}`;
+  const tot=s.reduce((a,c)=>({rev:a.rev+c.rev,E:a.E+c.E,tx:a.tx+c.it+c.lt+c.vat,pay:a.pay+c.pay}),{rev:0,E:0,tx:0,pay:0});
+  $('h-table').innerHTML=`<thead><tr><th>정산 월</th><th class="num">분배율</th><th class="num">매출</th><th class="num">공제</th><th class="num">크리에이터 몫</th><th class="num">${cr.type==='corp'?'부가세':'원천세'}</th><th class="num">지급액</th><th>상태</th></tr></thead>
+  <tbody>${s.map(c=>`<tr class="click" tabindex="0" data-ym="${c.ym}"><td>${ymLabel(c.ym)}</td><td class="num">${c.r}%</td><td class="num">${won(c.rev)}</td><td class="num">${won(c.E)}</td><td class="num">${won(c.share)}</td><td class="num">${won(c.it+c.lt+c.vat)}</td><td class="num"><b>${won(c.pay)}</b>${c.carryOut<0?`<small style="display:block;color:var(--red)">이월 ${won(-c.carryOut)}</small>`:''}</td><td>${c.locked?'<span class="tag lock">마감</span>':(c.rev?'<span class="tag ok">입력 중</span>':'<span class="tag">미입력</span>')}</td></tr>`).join('')}</tbody>
+  <tfoot><tr><td>합계</td><td></td><td class="num">${won(tot.rev)}</td><td class="num">${won(tot.E)}</td><td></td><td class="num">${won(tot.tx)}</td><td class="num">${won(tot.pay)}</td><td></td></tr></tfoot>`;
+}
+$('h-contract').addEventListener('change',e=>{sel.k=e.target.value;renderHistory()});
+const openRow=e=>{const tr=e.target.closest('tr[data-ym]');if(!tr)return;sel.ym=tr.dataset.ym;location.hash='settle'};
+$('h-table').addEventListener('click',openRow);
+$('h-table').addEventListener('keydown',e=>{if(e.key==='Enter')openRow(e)});
+
+/* 크리에이터·계약 */
+function renderCreators(){
+  $('c-table').innerHTML=`<thead><tr><th>크리에이터</th><th>사업자 유형</th><th>계약명</th><th>시작 월</th><th class="num">현재 분배율</th><th>공제 방식</th><th>분배율 이력</th></tr></thead><tbody>${S.contracts.map(k=>{const c=creator(k.cid);return `<tr><td><b>${esc(c.name)}</b></td><td>${TYPES[c.type]}</td><td>${esc(k.name)}</td><td>${ymLabel(k.start)}</td><td class="num">${rateAt(k,MONTHS[MONTHS.length-1])}%</td><td>${k.mode==='before'?'분배 전':'분배 후'}</td><td>${k.rates.map(r=>`${ymLabel(r.from)}~ ${r.rate}%`).join('<br>')}</td></tr>`}).join('')}${S.creators.filter(c=>!S.contracts.some(k=>k.cid===c.id)).map(c=>`<tr><td><b>${esc(c.name)}</b></td><td>${TYPES[c.type]}</td><td colspan="5" style="color:var(--mute)">등록된 계약 없음</td></tr>`).join('')}</tbody>`;
+  $('fc-type').innerHTML=Object.entries(TYPES).map(([v,t])=>`<option value="${v}">${t}</option>`).join('');
+  $('fk-creator').innerHTML=S.creators.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  $('fk-start').innerHTML=MONTHS.map(m=>`<option value="${m}">${ymLabel(m)}</option>`).join('');
+  $('fr-contract').innerHTML=S.contracts.map(k=>`<option value="${k.id}">${esc(kLabel(k))}</option>`).join('');
+  fillRateFrom();
+}
+function fillRateFrom(){const k=contract($('fr-contract').value);if(!k)return;$('fr-from').innerHTML=MONTHS.filter(m=>m>k.start&&!entry(k,m).locked).map(m=>`<option value="${m}">${ymLabel(m)}</option>`).join('');$('fr-rate').value=rateAt(k,MONTHS[MONTHS.length-1])}
+$('fr-contract').addEventListener('change',fillRateFrom);
+$('f-creator').addEventListener('submit',e=>{e.preventDefault();const name=$('fc-name').value.trim();if(!name)return;S.creators.push({id:'c'+(++uid),name,type:$('fc-type').value});addLog(`크리에이터 등록: ${name} (${TYPES[$('fc-type').value]})`);$('fc-name').value='';toast('크리에이터를 등록했습니다');renderCreators();renderLog()});
+$('f-contract').addEventListener('submit',e=>{e.preventDefault();const name=$('fk-name').value.trim(),rate=Math.min(100,Math.max(0,+$('fk-rate').value||0));if(!name)return;const k={id:'k'+(++uid),cid:$('fk-creator').value,name,start:$('fk-start').value,mode:$('fk-mode').value,rates:[{from:$('fk-start').value,rate}]};S.contracts.push(k);addLog(`${kLabel(k)} 계약 등록 (분배율 ${rate}%, ${k.mode==='before'?'분배 전':'분배 후'} 공제)`);$('fk-name').value='';toast('계약을 등록했습니다');renderCreators();renderLog()});
+$('f-rate').addEventListener('submit',e=>{e.preventDefault();const k=contract($('fr-contract').value),from=$('fr-from').value,rate=Math.min(100,Math.max(0,+$('fr-rate').value||0));if(!k||!from){toast('적용 가능한 월이 없습니다');return}const old=rateAt(k,from);k.rates=k.rates.filter(r=>r.from<from);k.rates.push({from,rate});addLog(`${kLabel(k)}: 분배율 ${old}% → ${rate}% (${ymLabel(from)}부터 적용)`);toast('분배율을 변경했습니다');renderCreators();renderLog()});
+
+/* 변경 이력 */
+function renderLog(){$('l-list').innerHTML=S.log.map(x=>`<li><time>${esc(x.t)} · 관리자</time>${esc(x.m)}</li>`).join('')}
+
+/* 화면 전환 */
+const VIEWS=['settle','history','creators','log'];
+function route(){
+  const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):'settle';
+  VIEWS.forEach(x=>$('v-'+x).classList.toggle('on',x===v));
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+v));
+  if(v==='settle')renderSettleForm();if(v==='history')renderHistory();if(v==='creators')renderCreators();if(v==='log')renderLog();
+}
+window.addEventListener('hashchange',route);
+route();
+}
+</script>
+</body>
+</html>
