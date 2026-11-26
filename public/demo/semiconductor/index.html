@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기업 사이트 CMS 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 젊은 반도체 회사의 첫 공식 사이트 — 정밀하고 깨끗하되 움직임이 있는
+   IDEA: 클린룸 안의 실리콘 웨이퍼, 다이 하나하나가 회사의 프로젝트
+   PICTURE: 회전하며 스캔되는 웨이퍼(다이 격자) SVG가 첫 화면 오른쪽을 채움
+   COLOUR and TYPE: 클린룸 화이트 #f3f4f1, 그래파이트 잉크 #0e1116, 실리콘 블루 #2346ff, 포토 공정 옐로 #ffd400 포인트 / IBM Plex Sans KR
+   LAYOUT: 상단 데모 바(사이트/관리자 전환), 사이트는 큰 타이포 히어로 → 회사 소개 → 프로젝트 → 채용, 관리자는 탭형 편집 화면 */
+:root{color-scheme:light dark;--bg:light-dark(#f3f4f1,#0d1014);--ink:light-dark(#0e1116,#eef0f3);--mute:light-dark(#5a616d,#9aa1ad);--line:light-dark(#dcdfe3,#262b33);--card:light-dark(#fff,#151920);--blue:light-dark(#2346ff,#6f86ff);--yel:#ffd400;--soft:light-dark(#e8ebf9,#1a2036)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans KR",system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}
+button{font:inherit;font-size:15px;font-weight:700;border:0;border-radius:999px;padding:10px 18px;min-height:44px;cursor:pointer;background:var(--ink);color:var(--bg)}
+button.line{background:none;border:1px solid var(--line);color:var(--ink)}
+button.blue{background:var(--blue);color:#fff}
+button.sm{min-height:36px;padding:6px 12px;font-size:13px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+input,textarea,select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:96px;resize:vertical}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px;font-weight:500}
+.demo{background:#0e1116;color:#fff;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px max(5vw,16px);font-size:14px}
+.demo b{background:var(--yel);color:#0e1116;border-radius:6px;padding:1px 8px;margin-right:8px}
+.seg{display:flex;background:#262b33;border-radius:999px;padding:4px}
+.seg a{padding:8px 16px;border-radius:999px;text-decoration:none;color:#c9ced6;font-weight:700}
+.seg a.on{background:#fff;color:#0e1116}
+.view{display:none}.view.on{display:block}
+/* 사이트 */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px max(5vw,16px);flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:.02em}
+.menu{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.menu a{text-decoration:none;padding:10px 12px;font-weight:500}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang button{background:none;color:var(--mute);border-radius:0;min-height:36px;padding:6px 12px;font-size:13px}
+.lang button.on{background:var(--ink);color:var(--bg)}
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;align-items:center;padding:24px max(5vw,16px) 56px;max-width:1240px;margin:0 auto}
+.hero h1{font-size:clamp(36px,5.6vw,64px);line-height:1.05;margin:0 0 18px;font-weight:700;text-wrap:balance;letter-spacing:-.02em}
+.hero p{font-size:18px;color:var(--mute);max-width:34em;margin:0 0 24px}
+.fig{position:relative;aspect-ratio:1;max-height:520px;width:100%}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.spin{transform-origin:250px 250px;animation:spin 60s linear infinite}
+.scan{animation:scan 4s ease-in-out infinite alternate}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes scan{from{transform:translateY(-170px)}to{transform:translateY(170px)}}
+@media(prefers-reduced-motion:reduce){.spin,.scan{animation:none}}
+.band{padding:clamp(40px,6vw,80px) max(5vw,16px)}
+.band.dark{background:#0e1116;color:#eef0f3}
+.inner{max-width:1240px;margin:0 auto}
+.band h2{font-size:clamp(28px,3.6vw,40px);line-height:1.1;margin:0 0 16px;text-wrap:balance}
+.lead{font-size:18px;max-width:40em;color:var(--mute)}
+.dark .lead{color:#aab1bd}
+.biz{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:28px}
+.biz div{border-top:3px solid var(--yel);padding:18px 0}
+.biz h3{margin:0 0 6px;font-size:19px}
+.biz p{margin:0;color:#aab1bd}
+.plist{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:24px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:left;color:var(--ink);font-weight:400;border-radius:16px;min-height:180px;display:flex;flex-direction:column;gap:8px}
+.pcard:hover{border-color:var(--blue)}
+.pcard small{color:var(--blue);font-weight:700}
+.pcard strong{font-size:19px;line-height:1.3}
+.pcard span{color:var(--mute);font-size:15px}
+.jobs{margin-top:24px;border-top:1px solid var(--line)}
+.job{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 4px;border-bottom:1px solid var(--line);cursor:pointer;flex-wrap:wrap}
+.job:hover strong{color:var(--blue)}
+.job strong{font-size:18px}
+.pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--soft);color:var(--blue);white-space:nowrap}
+.pill.off{background:var(--line);color:var(--mute)}
+footer{padding:28px max(5vw,16px);color:var(--mute);font-size:14px;border-top:1px solid var(--line)}
+.empty{color:var(--mute);padding:20px 0}
+.ov{position:fixed;inset:0;background:rgba(10,12,16,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.ov.on{display:flex}
+.modal{background:var(--card);color:var(--ink);border-radius:18px;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:26px}
+.modal h3{font-size:24px;margin:6px 0 10px;line-height:1.25}
+.modal .x{float:right;background:none;color:var(--mute);min-width:44px;padding:6px}
+/* 관리자 */
+.adm{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:80vh}
+.side{background:var(--card);border-right:1px solid var(--line);padding:20px 12px}
+.side p{font-size:13px;color:var(--mute);margin:0 8px 14px}
+.side a{display:block;text-decoration:none;padding:12px 14px;border-radius:10px;font-weight:500}
+.side a.on{background:var(--soft);color:var(--blue);font-weight:700}
+.work{padding:24px max(3vw,16px);max-width:1000px}
+.work h2{margin:0 0 4px;font-size:24px}
+.hint{color:var(--mute);font-size:14px;margin:0 0 18px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.two h3{margin:0;font-size:15px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:13px;color:var(--mute);font-weight:500}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.scroll{overflow-x:auto}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,16px);background:#0e1116;color:#fff;padding:12px 20px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;z-index:30;font-size:15px}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}.fig{max-width:420px;margin:0 auto}.adm{grid-template-columns:minmax(0,1fr)}.side{display:flex;flex-wrap:wrap;gap:4px;border-right:0;border-bottom:1px solid var(--line)}.side p{width:100%}}
+@media(max-width:600px){.two{grid-template-columns:minmax(0,1fr)}table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6.5em;margin-inline-start:-7em;color:var(--mute)}.stack td:empty{display:none}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<div class="demo">
+  <span><b>제안용 시안</b>가상의 회사·데이터입니다. 관리자에서 고친 내용이 사이트에 바로 반영됩니다.</span>
+  <nav class="seg" aria-label="화면 전환"><a href="#site" id="t-site">사이트</a><a href="#admin" id="t-admin">관리자</a></nav>
+</div>
+
+<div class="view" id="v-site">
+  <header class="nav">
+    <div class="logo"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="2.5"/><rect x="9" y="9" width="5" height="5" fill="var(--blue)"/><rect x="16" y="9" width="5" height="5" fill="currentColor"/><rect x="9" y="16" width="5" height="5" fill="currentColor"/><rect x="16" y="16" width="5" height="5" fill="var(--yel)"/></svg>ARCEL</div>
+    <div class="menu">
+      <a href="#site-about" data-k="navAbout"></a><a href="#site-projects" data-k="navProjects"></a><a href="#site-careers" data-k="navCareers"></a>
+      <div class="lang" role="group" aria-label="언어"><button id="l-ko" type="button">KO</button><button id="l-en" type="button">EN</button></div>
+    </div>
+  </header>
+  <section class="hero">
+    <div>
+      <h1 id="s-heroTitle"></h1>
+      <p id="s-heroSub"></p>
+      <a href="#site-projects"><button class="blue" type="button" tabindex="-1" data-k="cta"></button></a>
+    </div>
+    <div class="fig" aria-label="회전하는 실리콘 웨이퍼 비주얼">
+      <svg viewBox="0 0 500 500" role="img" aria-hidden="true">
+        <defs><clipPath id="wc"><circle cx="250" cy="250" r="200"/></clipPath>
+          <radialGradient id="wg" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#dfe4ee"/><stop offset=".55" stop-color="#aeb7c7"/><stop offset="1" stop-color="#7d889c"/></radialGradient>
+          <linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffd400" stop-opacity="0"/><stop offset=".5" stop-color="#ffd400" stop-opacity=".75"/><stop offset="1" stop-color="#ffd400" stop-opacity="0"/></linearGradient></defs>
+        <ellipse cx="258" cy="462" rx="170" ry="16" fill="#000" opacity=".12"/>
+        <g class="spin">
+          <circle cx="250" cy="250" r="204" fill="#5d6779"/>
+          <circle cx="250" cy="250" r="200" fill="url(#wg)"/>
+          <g clip-path="url(#wc)" id="dies"></g>
+          <path d="M238 450 a12 12 0 0 1 24 0z" fill="var(--bg)"/>
+        </g>
+        <g clip-path="url(#wc)"><rect class="scan" x="40" y="230" width="420" height="40" fill="url(#sg)"/></g>
+        <circle cx="250" cy="250" r="200" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/>
+      </svg>
+    </div>
+  </section>
+  <section class="band dark" id="site-about"><div class="inner">
+    <h2 id="s-aboutTitle"></h2><p class="lead" id="s-aboutBody"></p>
+    <div class="biz" id="s-biz"></div>
+  </div></section>
+  <section class="band" id="site-projects"><div class="inner">
+    <h2 data-k="projTitle"></h2><p class="lead" data-k="projLead"></p>
+    <div class="plist" id="s-projects"></div>
+  </div></section>
+  <section class="band" id="site-careers" style="background:var(--card)"><div class="inner">
+    <h2 data-k="jobTitle"></h2><p class="lead" data-k="jobLead"></p>
+    <div class="jobs" id="s-jobs"></div>
+  </div></section>
+  <footer>© ARCEL Semiconductor (가상 회사) · 제안용 시안</footer>
+</div>
+
+<div class="view" id="v-admin">
+  <div class="adm">
+    <nav class="side" aria-label="관리자 메뉴">
+      <p>관리자 · admin</p>
+      <a href="#admin" data-tab="content">사이트 문구</a>
+      <a href="#admin" data-tab="projects">프로젝트 관리</a>
+      <a href="#admin" data-tab="jobs">채용 공고 관리</a>
+      <a href="#admin" data-tab="apps">지원 내역</a>
+    </nav>
+    <div class="work" id="work"></div>
+  </div>
+</div>
+
+<div class="ov" id="ov" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const L={
+  ko:{navAbout:'회사 소개',navProjects:'프로젝트',navCareers:'채용',cta:'프로젝트 보기',projTitle:'함께하는 프로젝트',projLead:'고객사와 함께 만든 결과를 소개합니다.',jobTitle:'채용',jobLead:'정밀함을 즐기는 동료를 기다립니다.',open:'모집 중',closed:'마감',apply:'지원하기',name:'이름',file:'이력서 파일 (PDF)',submit:'지원서 제출',sent:'지원서가 접수되었습니다',noEn:'',close:'닫기',none:'등록된 항목이 없습니다.'},
+  en:{navAbout:'About',navProjects:'Projects',navCareers:'Careers',cta:'View projects',projTitle:'Projects',projLead:'Results we built together with our partners.',jobTitle:'Careers',jobLead:'Join a team that loves precision.',open:'Open',closed:'Closed',apply:'Apply',name:'Name',file:'Resume (PDF)',submit:'Submit',sent:'Your application has been received',close:'Close',none:'Nothing here yet.'}
+};
+const S={
+  lang:'ko',tab:'content',editP:null,editJ:null,
+  content:{
+    ko:{heroTitle:'작은 칩 하나에\n큰 정밀함을 담습니다',heroSub:'공정 설계부터 검사 장비 소프트웨어까지, 젊은 엔지니어들이 반도체 생산의 정확도를 높입니다.',aboutTitle:'정밀함으로 성장하는 팀',aboutBody:'우리는 반도체 공정 데이터와 장비 제어 기술로 생산 현장의 수율을 높이는 회사입니다. 평균 연령 31세의 엔지니어들이 빠르게 실험하고, 현장에서 검증합니다.'},
+    en:{heroTitle:'Precision,\nbuilt into every chip',heroSub:'From process design to inspection software, our young engineers raise the accuracy of semiconductor production.',aboutTitle:'A team that grows with precision',aboutBody:'We improve fab yield with process data and equipment control technology. Our engineers, 31 years old on average, experiment fast and validate on the floor.'}
+  },
+  biz:[{ko:['공정 데이터 분석','수율에 영향을 주는 공정 변수를 찾아냅니다.'],en:['Process data analytics','We find the process variables that drive yield.']},
+       {ko:['검사 장비 소프트웨어','웨이퍼 검사 장비의 제어·분석 소프트웨어를 개발합니다.'],en:['Inspection software','Control and analysis software for wafer inspection tools.']},
+       {ko:['장비 자동화','생산 라인의 반복 작업을 자동화합니다.'],en:['Equipment automation','We automate repetitive work on the line.']}],
+  projects:[
+    {id:1,year:'2026',tag:'Inspection',ko:{t:'웨이퍼 결함 검사 소프트웨어 고도화',s:'검사 속도를 높이고 오검출을 줄인 검사 알고리즘을 적용했습니다.'},en:{t:'Wafer defect inspection upgrade',s:'Faster inspection with fewer false detections.'}},
+    {id:2,year:'2025',tag:'Data',ko:{t:'공정 데이터 수집 플랫폼 구축',s:'장비별로 흩어진 공정 데이터를 한곳에 모아 분석할 수 있게 했습니다.'},en:{t:'Process data platform',s:'Unified process data from every tool for analysis.'}},
+    {id:3,year:'2025',tag:'Automation',ko:{t:'후공정 라인 자동 이송 제어',s:'이송 장비 제어를 자동화해 작업자 개입을 줄였습니다.'},en:{t:'',s:''}}],
+  jobs:[
+    {id:1,closed:false,type:'정규직',ko:{t:'장비 제어 소프트웨어 엔지니어',d:'검사 장비 제어 소프트웨어를 설계·개발합니다. C++ 또는 C# 경험이 있으면 좋습니다.'},en:{t:'Equipment Control Software Engineer',d:'Design and build control software for inspection tools. C++ or C# experience preferred.'}},
+    {id:2,closed:false,type:'정규직',ko:{t:'공정 데이터 분석가',d:'공정 데이터를 분석해 수율 개선 포인트를 찾습니다.'},en:{t:'Process Data Analyst',d:'Analyze process data to find yield improvements.'}},
+    {id:3,closed:true,type:'인턴',ko:{t:'2026 상반기 엔지니어 인턴',d:'현장 실습과 함께 장비 소프트웨어를 배웁니다.'},en:{t:'2026 H1 Engineering Intern',d:'Learn equipment software with hands-on fab experience.'}}],
+  apps:[{job:1,name:'김지원',file:'resume_kim.pdf',at:'2026-11-24 14:10'},{job:2,name:'박서연',file:'portfolio_park.pdf',at:'2026-11-25 09:42'}]
+};
+let uid=10;
+const t=k=>L[S.lang][k];
+const toast=m=>{const e=$('toast');e.textContent=m;e.classList.add('on');clearTimeout(e._h);e._h=setTimeout(()=>e.classList.remove('on'),1900)};
+const now=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`};
+const nl=s=>esc(s).replace(/\n/g,'<br>');
+/* 영문 미입력 항목은 영문 페이지에서 숨김 */
+const visible=x=>S.lang==='ko'?!!x.ko.t:!!x.en.t;
+
+/* 웨이퍼 다이 */
+{
+  let h='';const sz=26,g=4;
+  for(let y=50;y<450;y+=sz+g)for(let x=50;x<450;x+=sz+g){
+    const cx=x+sz/2-250,cy=y+sz/2-250;if(Math.hypot(cx,cy)>188)continue;
+    const r=(x*7+y*13)%23;const fill=r===0?'#ffd400':r<3?'#2346ff':'#c9d0dc';
+    h+=`<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="2" fill="${fill}" opacity="${r<3?.95:.55}"/>`;
+  }
+  $('dies').innerHTML=h;
+}
+
+function renderSite(){
+  document.documentElement.lang=S.lang;
+  $('l-ko').classList.toggle('on',S.lang==='ko');$('l-en').classList.toggle('on',S.lang==='en');
+  document.querySelectorAll('[data-k]').forEach(e=>e.textContent=t(e.dataset.k));
+  const c=S.content[S.lang];
+  $('s-heroTitle').innerHTML=nl(c.heroTitle);$('s-heroSub').textContent=c.heroSub;
+  $('s-aboutTitle').textContent=c.aboutTitle;$('s-aboutBody').textContent=c.aboutBody;
+  $('s-biz').innerHTML=S.biz.map(b=>`<div><h3>${esc(b[S.lang][0])}</h3><p>${esc(b[S.lang][1])}</p></div>`).join('');
+  const ps=S.projects.filter(visible);
+  $('s-projects').innerHTML=ps.length?ps.map(p=>`<button class="pcard" type="button" data-p="${p.id}"><small>${esc(p.year)} · ${esc(p.tag)}</small><strong>${esc(p[S.lang].t)}</strong><span>${esc(p[S.lang].s)}</span></button>`).join(''):`<p class="empty">${t('none')}</p>`;
+  const js=S.jobs.filter(visible);
+  $('s-jobs').innerHTML=js.length?js.map(j=>`<div class="job" tabindex="0" role="button" data-j="${j.id}"><strong>${esc(j[S.lang].t)}</strong><span class="pill ${j.closed?'off':''}">${j.closed?t('closed'):t('open')}</span></div>`).join(''):`<p class="empty">${t('none')}</p>`;
+}
+function openModal(h){$('modal').innerHTML=h;$('ov').classList.add('on');$('modal').querySelector('button,input')?.focus()}
+function closeModal(){$('ov').classList.remove('on')}
+$('ov').addEventListener('click',e=>{if(e.target.id==='ov'||e.target.closest('[data-close]'))closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+$('s-projects').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;const p=S.projects.find(x=>x.id==b.dataset.p);openModal(`<button class="x" data-close aria-label="${t('close')}">✕</button><small style="color:var(--blue);font-weight:700">${esc(p.year)} · ${esc(p.tag)}</small><h3>${esc(p[S.lang].t)}</h3><p>${esc(p[S.lang].s)}</p>`)});
+const openJob=id=>{const j=S.jobs.find(x=>x.id==id);openModal(`<button class="x" data-close aria-label="${t('close')}">✕</button><span class="pill ${j.closed?'off':''}">${j.closed?t('closed'):t('open')}</span> <span class="pill">${esc(j.type)}</span><h3>${esc(j[S.lang].t)}</h3><p>${esc(j[S.lang].d)}</p>${j.closed?'':`<form id="apply" data-j="${j.id}"><label for="a-name">${t('name')}</label><input id="a-name" required maxlength="30"><label for="a-file">${t('file')}</label><input id="a-file" type="file" accept=".pdf"><div style="margin-top:16px"><button class="blue">${t('submit')}</button></div></form>`}`)};
+$('s-jobs').addEventListener('click',e=>{const r=e.target.closest('[data-j]');if(r)openJob(r.dataset.j)});
+$('s-jobs').addEventListener('keydown',e=>{const r=e.target.closest('[data-j]');if(r&&e.key==='Enter')openJob(r.dataset.j)});
+$('modal').addEventListener('submit',e=>{if(e.target.id!=='apply')return;e.preventDefault();const f=$('a-file').files[0];S.apps.unshift({job:+e.target.dataset.j,name:$('a-name').value.trim(),file:f?f.name:'(파일 없음)',at:now()});closeModal();toast(t('sent')+' · 관리자 > 지원 내역에서 확인할 수 있습니다');renderAdmin()});
+$('l-ko').addEventListener('click',()=>{S.lang='ko';renderSite()});
+$('l-en').addEventListener('click',()=>{S.lang='en';renderSite()});
+
+/* 관리자 */
+const F=[['heroTitle','메인 제목',1],['heroSub','메인 소개 문구',1],['aboutTitle','회사 소개 제목',0],['aboutBody','회사 소개 본문',1]];
+function renderAdmin(){
+  document.querySelectorAll('.side a').forEach(a=>a.classList.toggle('on',a.dataset.tab===S.tab));
+  const w=$('work');
+  if(S.tab==='content'){
+    w.innerHTML=`<h2>사이트 문구</h2><p class="hint">입력하는 즉시 사이트에 반영됩니다. 위쪽 '사이트' 버튼으로 결과를 확인해 보세요.</p>
+    <div class="box two"><div><h3>국문</h3>${F.map(([k,n,m])=>`<label for="c-ko-${k}">${n}</label>${m?`<textarea id="c-ko-${k}" data-l="ko" data-f="${k}">${esc(S.content.ko[k])}</textarea>`:`<input id="c-ko-${k}" data-l="ko" data-f="${k}" value="${esc(S.content.ko[k])}">`}`).join('')}</div>
+    <div><h3>영문</h3>${F.map(([k,n,m])=>`<label for="c-en-${k}">${n}</label>${m?`<textarea id="c-en-${k}" data-l="en" data-f="${k}">${esc(S.content.en[k])}</textarea>`:`<input id="c-en-${k}" data-l="en" data-f="${k}" value="${esc(S.content.en[k])}">`}`).join('')}</div></div>
+    <button class="blue" type="button" id="c-save">저장</button>`;
+  }else if(S.tab==='projects'){
+    const e=S.projects.find(p=>p.id===S.editP)||{year:'2026',tag:'',ko:{t:'',s:''},en:{t:'',s:''}};
+    w.innerHTML=`<h2>프로젝트 관리</h2><p class="hint">영문 제목을 비워두면 영문 사이트에서는 자동으로 숨겨집니다.</p>
+    <div class="box scroll"><table class="stack"><thead><tr><th>연도</th><th>국문 제목</th><th>영문</th><th>관리</th></tr></thead><tbody>${S.projects.map(p=>`<tr><td>${esc(p.year)}</td><td>${esc(p.ko.t)}</td><td>${p.en.t?'입력됨':'<span style="color:var(--mute)">미입력 (영문 숨김)</span>'}</td><td><div class="acts"><button class="sm line" data-pe="${p.id}">수정</button><button class="sm line" data-pd="${p.id}">삭제</button></div></td></tr>`).join('')}</tbody></table></div>
+    <form class="box" id="p-form"><h3 style="margin:0">${S.editP?'프로젝트 수정':'새 프로젝트 등록'}</h3>
+    <div class="two"><div><label for="p-year">연도</label><input id="p-year" value="${esc(e.year)}" required maxlength="4"></div><div><label for="p-tag">분야 태그</label><input id="p-tag" value="${esc(e.tag)}" maxlength="20"></div></div>
+    <div class="two"><div><label for="p-kt">국문 제목</label><input id="p-kt" value="${esc(e.ko.t)}" required><label for="p-ks">국문 요약</label><textarea id="p-ks">${esc(e.ko.s)}</textarea></div>
+    <div><label for="p-et">영문 제목</label><input id="p-et" value="${esc(e.en.t)}"><label for="p-es">영문 요약</label><textarea id="p-es">${esc(e.en.s)}</textarea></div></div>
+    <div class="acts" style="margin-top:14px"><button class="blue">${S.editP?'수정 저장':'등록'}</button>${S.editP?'<button class="line" type="button" id="p-cancel">취소</button>':''}</div></form>`;
+  }else if(S.tab==='jobs'){
+    const e=S.jobs.find(j=>j.id===S.editJ)||{type:'정규직',ko:{t:'',d:''},en:{t:'',d:''}};
+    w.innerHTML=`<h2>채용 공고 관리</h2><p class="hint">마감 처리하면 사이트에 '마감'으로 표시되고 지원 버튼이 사라집니다.</p>
+    <div class="box scroll"><table class="stack"><thead><tr><th>공고</th><th>형태</th><th>상태</th><th>지원자</th><th>관리</th></tr></thead><tbody>${S.jobs.map(j=>`<tr><td>${esc(j.ko.t)}</td><td>${esc(j.type)}</td><td><span class="pill ${j.closed?'off':''}">${j.closed?'마감':'모집 중'}</span></td><td>${S.apps.filter(a=>a.job===j.id).length}명</td><td><div class="acts"><button class="sm line" data-jc="${j.id}">${j.closed?'재개':'마감'}</button><button class="sm line" data-je="${j.id}">수정</button><button class="sm line" data-jd="${j.id}">삭제</button></div></td></tr>`).join('')}</tbody></table></div>
+    <form class="box" id="j-form"><h3 style="margin:0">${S.editJ?'공고 수정':'새 공고 등록'}</h3>
+    <label for="j-type">고용 형태</label><select id="j-type">${['정규직','계약직','인턴'].map(x=>`<option ${x===e.type?'selected':''}>${x}</option>`).join('')}</select>
+    <div class="two"><div><label for="j-kt">국문 공고명</label><input id="j-kt" value="${esc(e.ko.t)}" required><label for="j-kd">국문 상세</label><textarea id="j-kd">${esc(e.ko.d)}</textarea></div>
+    <div><label for="j-et">영문 공고명</label><input id="j-et" value="${esc(e.en.t)}"><label for="j-ed">영문 상세</label><textarea id="j-ed">${esc(e.en.d)}</textarea></div></div>
+    <div class="acts" style="margin-top:14px"><button class="blue">${S.editJ?'수정 저장':'등록'}</button>${S.editJ?'<button class="line" type="button" id="j-cancel">취소</button>':''}</div></form>`;
+  }else{
+    w.innerHTML=`<h2>지원 내역</h2><p class="hint">사이트의 채용 공고에서 지원하면 여기에 바로 쌓입니다. 실제 구축 시 첨부파일은 권한이 있는 관리자만 내려받을 수 있습니다.</p>
+    <div class="box scroll">${S.apps.length?`<table class="stack"><thead><tr><th>접수 일시</th><th>공고</th><th>이름</th><th>첨부파일</th></tr></thead><tbody>${S.apps.map(a=>`<tr><td>${esc(a.at)}</td><td>${esc(S.jobs.find(j=>j.id===a.job)?.ko.t||'(삭제된 공고)')}</td><td>${esc(a.name)}</td><td>${esc(a.file)}</td></tr>`).join('')}</tbody></table>`:'<p class="empty">아직 접수된 지원서가 없습니다.</p>'}</div>`;
+  }
+}
+$('work').addEventListener('input',e=>{const el=e.target;if(el.dataset.l){S.content[el.dataset.l][el.dataset.f]=el.value;renderSite()}});
+$('work').addEventListener('click',e=>{
+  const d=e.target.dataset;
+  if(e.target.id==='c-save')toast('저장했습니다 · 사이트에 반영되었습니다');
+  if(d.pe){S.editP=+d.pe;renderAdmin()}
+  if(d.pd){S.projects=S.projects.filter(p=>p.id!=d.pd);if(S.editP==d.pd)S.editP=null;renderAdmin();renderSite();toast('프로젝트를 삭제했습니다')}
+  if(e.target.id==='p-cancel'){S.editP=null;renderAdmin()}
+  if(d.jc){const j=S.jobs.find(x=>x.id==d.jc);j.closed=!j.closed;renderAdmin();renderSite();toast(j.closed?'공고를 마감했습니다':'공고를 다시 열었습니다')}
+  if(d.je){S.editJ=+d.je;renderAdmin()}
+  if(d.jd){S.jobs=S.jobs.filter(j=>j.id!=d.jd);if(S.editJ==d.jd)S.editJ=null;renderAdmin();renderSite();toast('공고를 삭제했습니다')}
+  if(e.target.id==='j-cancel'){S.editJ=null;renderAdmin()}
+});
+$('work').addEventListener('submit',e=>{
+  e.preventDefault();const v=id=>$(id).value.trim();
+  if(e.target.id==='p-form'){
+    const data={year:v('p-year'),tag:v('p-tag'),ko:{t:v('p-kt'),s:v('p-ks')},en:{t:v('p-et'),s:v('p-es')}};
+    if(S.editP){Object.assign(S.projects.find(p=>p.id===S.editP),data);toast('수정했습니다 · 사이트에 반영되었습니다')}else{S.projects.unshift({id:++uid,...data});toast('등록했습니다 · 사이트에 반영되었습니다')}
+    S.editP=null;
+  }
+  if(e.target.id==='j-form'){
+    const data={type:$('j-type').value,ko:{t:v('j-kt'),d:v('j-kd')},en:{t:v('j-et'),d:v('j-ed')}};
+    if(S.editJ){Object.assign(S.jobs.find(j=>j.id===S.editJ),data);toast('수정했습니다 · 사이트에 반영되었습니다')}else{S.jobs.unshift({id:++uid,closed:false,...data});toast('등록했습니다 · 사이트에 반영되었습니다')}
+    S.editJ=null;
+  }
+  renderAdmin();renderSite();
+});
+document.querySelectorAll('.side a').forEach(a=>a.addEventListener('click',e=>{S.tab=a.dataset.tab;renderAdmin()}));
+
+/* 화면 전환: #site / #admin (그 외 #site-* 는 사이트 내 이동) */
+function route(){
+  const h=location.hash.slice(1);const admin=h==='admin';
+  $('v-site').classList.toggle('on',!admin);$('v-admin').classList.toggle('on',admin);
+  $('t-site').classList.toggle('on',!admin);$('t-admin').classList.toggle('on',admin);
+  if(!admin&&h.startsWith('site-'))document.getElementById(h)?.scrollIntoView();
+  if(admin||h==='site')window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+renderSite();renderAdmin();route();
+}
+</script>
+</body>
+</html>
